@@ -1,0 +1,836 @@
+<title>Klausur Nachbereitung EF</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+<style>
+/* Layout: eine ruhige Arbeitsspalte. Start = Liste der Klausur-Teilaufgaben mit Selbsteinschätzung, Üben = Aufgabe, Eingabe, gestufte Rückmeldung. */
+:root{
+  --bg:#f3f6fa; --surface:#ffffff; --ink:#13203a; --muted:#566178; --line:#d8dfea;
+  --accent:#0a6a96; --accent-ink:#ffffff; --accent-soft:#e1f0f7;
+  --good:#1b7a4b; --good-soft:#e1f3e9; --warn:#a15c00; --warn-soft:#fdf0d9; --bad:#b3261e; --bad-soft:#fbe6e4;
+  --head:'Space Grotesk','Segoe UI',system-ui,sans-serif; --body:'Inter','Segoe UI',system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e1522; --surface:#162033; --ink:#e7ecf5; --muted:#9aa8c0; --line:#2a3850;
+  --accent:#58b8e2; --accent-ink:#06202e; --accent-soft:#14303f;
+  --good:#63d09a; --good-soft:#133125; --warn:#f0b34f; --warn-soft:#3a2c12; --bad:#ff8f86; --bad-soft:#3d1c1a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1522; --surface:#162033; --ink:#e7ecf5; --muted:#9aa8c0; --line:#2a3850;
+  --accent:#58b8e2; --accent-ink:#06202e; --accent-soft:#14303f;
+  --good:#63d09a; --good-soft:#133125; --warn:#f0b34f; --warn-soft:#3a2c12; --bad:#ff8f86; --bad-soft:#3d1c1a; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+.wrap{max-width:760px;margin:0 auto}
+h1,h2,h3{font-family:var(--head);line-height:1.2;text-wrap:balance;margin:0}
+h1{font-size:1.7rem;font-weight:700}
+h2{font-size:1.2rem;font-weight:600}
+h3{font-size:1rem;font-weight:600}
+p{margin:0 0 .7em}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.muted{color:var(--muted)}
+button{font:inherit;cursor:pointer;color:inherit}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:.55em 1em;font-weight:600;min-height:44px}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.ghost{background:transparent}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+.card + .card{margin-top:14px}
+.intro{display:grid;gap:10px;margin:14px 0 22px}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:0;padding:0;list-style:none}
+.steps li{background:var(--accent-soft);border-radius:10px;padding:10px 12px;font-size:.92rem}
+.steps b{display:block;font-family:var(--head)}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.3em .85em;font-size:.88rem;min-height:36px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.list{display:grid;gap:10px}
+.item{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;gap:10px;min-width:0}
+.item[data-s="low"]{border-left:6px solid var(--bad)}
+.item[data-s="mid"]{border-left:6px solid var(--warn)}
+.item[data-s="ok"]{border-left:6px solid var(--good)}
+.item .head{display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap}
+.tag{font-size:.78rem;font-weight:600;color:var(--muted);white-space:nowrap}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{border:1px solid var(--line);background:transparent;border-radius:8px;padding:.3em .7em;font-size:.86rem;min-height:38px}
+.seg button[aria-pressed="true"][data-v="low"]{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.seg button[aria-pressed="true"][data-v="mid"]{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+.seg button[aria-pressed="true"][data-v="ok"]{background:var(--good-soft);border-color:var(--good);color:var(--good)}
+.go{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.dots{display:inline-flex;gap:4px;align-items:center;font-size:.8rem;color:var(--muted)}
+.dots i{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--muted);display:inline-block}
+.dots i.on{background:var(--good);border-color:var(--good)}
+details.tips{margin-top:18px}
+details.tips summary{cursor:pointer;font-family:var(--head);font-weight:600}
+details.tips ul{margin:10px 0 0;padding-left:1.1em;display:grid;gap:6px}
+/* Üben */
+.levelbar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.levelbar button{flex:1 1 140px;border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:.5em .8em;font-weight:600;text-align:left;min-height:48px}
+.levelbar button small{display:block;font-weight:400;color:var(--muted)}
+.levelbar button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.task{margin:14px 0 10px;font-size:1.05rem}
+.task p{margin-bottom:.6em}
+.inputs{display:grid;gap:14px;margin:16px 0}
+.field{display:grid;gap:6px}
+.field>label,.field>.lab{font-weight:600;font-size:.92rem}
+.row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+input.num{width:5.6em;font:inherit;padding:.5em .55em;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);min-height:44px;text-align:center;font-variant-numeric:tabular-nums}
+input.wide{width:min(100%,18em);text-align:left}
+.vecin{justify-self:start;display:inline-flex;flex-direction:column;gap:4px;padding:6px 8px;border-left:2.5px solid var(--ink);border-right:2.5px solid var(--ink);border-radius:10px}
+.vecin input.num{width:4.6em}
+.sep{color:var(--muted);font-weight:600}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;cursor:pointer;background:var(--bg)}
+.opt input{margin-top:.3em;width:18px;height:18px;flex:none}
+.opt span{min-width:0}
+.opt.right{border-color:var(--good);background:var(--good-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 0}
+.fb{display:grid;gap:8px;margin-top:14px}
+.msg{border-radius:10px;padding:10px 12px;border:1px solid var(--line);background:var(--bg)}
+.msg.ok{background:var(--good-soft);border-color:var(--good)}
+.msg.near{background:var(--warn-soft);border-color:var(--warn)}
+.msg.no{background:var(--bad-soft);border-color:var(--bad)}
+.msg b:first-child{display:block;font-family:var(--head)}
+.tipbox{border-left:5px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;padding:10px 12px}
+.sol{border:1px dashed var(--muted);border-radius:10px;padding:12px 14px}
+.merke{font-size:.92rem}
+.streak{display:flex;align-items:center;gap:8px;font-size:.9rem;color:var(--muted)}
+/* Mathe */
+.vec{display:inline-flex;flex-direction:column;vertical-align:middle;padding:0 .4em;border-left:2px solid currentColor;border-right:2px solid currentColor;border-radius:.4em;line-height:1.18;margin:0 .15em;text-align:center}
+.vec i{font-style:normal;font-variant-numeric:tabular-nums}
+.ov{position:relative;display:inline-block}
+.ov::before{content:"→";position:absolute;left:0;right:0;top:-.62em;text-align:center;font-size:.7em;line-height:1}
+.mono{font-variant-numeric:tabular-nums;white-space:nowrap}
+.hr{height:1px;background:var(--line);margin:14px 0;border:0}
+.foot{margin-top:26px;font-size:.84rem;color:var(--muted)}
+.banner{background:var(--good-soft);border:1px solid var(--good);border-radius:10px;padding:10px 12px;margin-top:12px}
+@media (prefers-reduced-motion:no-preference){.msg,.tipbox,.sol,.banner{animation:in .18s ease-out}@keyframes in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}}
+</style>
+
+<div class="wrap" id="app"></div>
+
+<script>
+/* ===================== Hilfsfunktionen ===================== */
+const rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const pick=a=>a[rnd(0,a.length-1)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(0,i);[a[i],a[j]]=[a[j],a[i]]}return a};
+const isInt=x=>Math.abs(x-Math.round(x))<1e-9;
+const close=(x,y,t=1e-6)=>Math.abs(x-y)<=t;
+function n2s(x){ if(isInt(x)) x=Math.round(x); let s=(Math.round(x*1000)/1000).toString().replace('.',','); return s.replace('-','−'); }
+const pt=(...a)=>'('+a.map(n2s).join(' | ')+')';
+const vec=(...a)=>'<span class="vec">'+a.map(x=>'<i>'+(typeof x==='string'?x:n2s(x))+'</i>').join('')+'</span>';
+const ov=t=>'<span class="ov">'+t+'</span>';
+const sup=d=>'<sup>'+d+'</sup>';
+const rt=n=>'√'+n;
+const sub=(a,b)=>a.map((x,i)=>x-b[i]);
+const add=(a,b)=>a.map((x,i)=>x+b[i]);
+const mul=(k,a)=>a.map(x=>k*x);
+const len2=a=>a.reduce((s,x)=>s+x*x,0);
+const isSquare=n=>isInt(Math.sqrt(n));
+const NAMES=['x','y','z'];
+function lin(v,k){ return k===0?v:(k>0?`${v} + ${k}`:`${v} − ${-k}`); }
+function coordMsg(v,ans,tol){ const w=[]; v.forEach((x,i)=>{ if(!close(x,ans[i],tol||1e-6)) w.push(i) }); return w; }
+function samePerm(v,ans){ return [...v].map(x=>Math.round(x*1e6)).sort((a,b)=>a-b).join()===[...ans].map(x=>Math.round(x*1e6)).sort((a,b)=>a-b).join(); }
+function wrongMsg(w,extra){ return {t:'near',h:'<b>Fast.</b>Prüfe noch die '+w.map(i=>NAMES[i]+'-').join(' und ')+'Koordinate. '+(extra||'')}; }
+function colinear(u,v){ // Faktor r mit v = r*u, sonst null
+  let r=null; for(let i=0;i<u.length;i++){ if(Math.abs(u[i])<1e-9){ if(Math.abs(v[i])>1e-9) return null; continue; } const q=v[i]/u[i]; if(r===null) r=q; else if(!close(q,r,1e-6)) return null; } return r; }
+const OK=h=>({t:'ok',h:'<b>Richtig!</b>'+(h||'')});
+const NO=h=>({t:'no',h:'<b>Noch nicht richtig.</b>'+h});
+const NEAR=h=>({t:'near',h:'<b>Fast.</b>'+h});
+
+/* ===== Eingaben der Lernenden auswerten (ohne eval) ===== */
+function parseExpr(str){
+  if(str==null) return NaN;
+  const s=String(str).trim().toLowerCase().replace(/,/g,'.').replace(/[−–—]/g,'-').replace(/[·×]/g,'*').replace(/:/g,'/').replace(/√/g,'sqrt').replace(/\s+/g,'');
+  if(!s) return NaN;
+  let i=0;
+  const peek=()=>s[i];
+  function number(){ const m=/^(\d+(\.\d+)?|\.\d+)/.exec(s.slice(i)); if(!m) return NaN; i+=m[0].length; return parseFloat(m[0]); }
+  function atom(){
+    if(s.startsWith('sqrt',i)){ i+=4; let v; if(peek()==='('){ i++; v=expr(); if(peek()!==')') return NaN; i++; } else v=number(); return Math.sqrt(v); }
+    if(peek()==='('){ i++; const v=expr(); if(peek()!==')') return NaN; i++; return v; }
+    return number();
+  }
+  function factor(){
+    if(peek()==='-'){ i++; return -factor(); }
+    if(peek()==='+'){ i++; return factor(); }
+    let p=atom(); if(peek()==='^'){ i++; p=Math.pow(p,factor()); } return p;
+  }
+  function term(){
+    let v=factor();
+    for(;;){
+      if(peek()==='*'){ i++; v*=factor(); }
+      else if(peek()==='/'){ i++; v/=factor(); }
+      else if(peek()==='('||s.startsWith('sqrt',i)){ v*=factor(); }
+      else break;
+    }
+    return v;
+  }
+  function expr(){ let v=term(); for(;;){ if(peek()==='+'){ i++; v+=term(); } else if(peek()==='-'){ i++; v-=term(); } else break; } return v; }
+  const v=expr();
+  return (i===s.length&&isFinite(v))?v:NaN;
+}
+function parseList(str){
+  let s=String(str||'').toLowerCase().replace(/x\d?\s*=/g,' ').replace(/l\s*=/g,' ').replace(/[{}]/g,' ').replace(/\s+(und|oder)\s+/g,';');
+  let parts;
+  if(s.includes(';')) parts=s.split(';'); else if(/\s/.test(s.trim())) parts=s.trim().split(/\s+/); else if(/^\s*-?\d+,\d+\s*$/.test(s)) parts=[s]; else parts=s.split(',');
+  const out=parts.map(p=>p.trim()).filter(Boolean).map(parseExpr);
+  return out.length&&out.every(x=>!isNaN(x))?out:null;
+}
+function parsePts(str){
+  const out=[]; const re=/\(([^()]*)\)/g; let m;
+  while((m=re.exec(String(str||'')))){ const inner=m[1]; const sepRe=/[|;]/.test(inner)?/[|;]/:/\//; const p=inner.split(sepRe); if(p.length!==2) return null; const x=parseExpr(p[0]),y=parseExpr(p[1]); if(isNaN(x)||isNaN(y)) return null; out.push([x,y]); }
+  return out.length?out:null;
+}
+const uniq=a=>{const o=[];a.forEach(x=>{if(!o.some(y=>close(x,y))) o.push(x)});return o.sort((p,q)=>p-q)};
+function sameSet(a,b){ a=uniq(a); b=uniq(b); return a.length===b.length&&a.every((x,i)=>close(x,b[i])); }
+
+/* ===================== Aufgaben-Generatoren ===================== */
+/* Jede Aufgabe: {html, inputs, check(v)->{ok,msgs}, tips:[t1,t2], solution, correct} */
+
+/* ---- 1a Koordinaten am Körper ---- */
+function gen1aB(){
+  const a=rnd(2,6),b=rnd(2,6),h=rnd(2,6), X=pick(['C','F','G','H']);
+  const ans={C:[a,b,0],F:[a,0,h],G:[a,b,h],H:[0,b,h]}[X];
+  const why={C:`C liegt in der Grundfläche: x-Koordinate wie B, y-Koordinate wie D, Höhe 0.`,
+             F:`F liegt senkrecht über B: x und y wie B, Höhe wie E.`,
+             G:`G liegt senkrecht über C: x wie B, y wie D, Höhe wie E.`,
+             H:`H liegt senkrecht über D: x und y wie D, Höhe wie E.`}[X];
+  return {
+    html:`<p>Ein Quader ABCDEFGH hat die Eckpunkte A${pt(0,0,0)}, B${pt(a,0,0)}, D${pt(0,b,0)} und E${pt(0,0,h)}. Die Grundfläche ist ABCD. E liegt über A, F über B, G über C und H über D.</p><p>Gib die Koordinaten des Punktes <b>${X}</b> an.</p>`,
+    inputs:[{key:'p',label:`Koordinaten von ${X}`,type:'pt3'}],
+    check(v){
+      const w=coordMsg(v.p,ans); if(!w.length) return {ok:true,msgs:[OK()]};
+      if(samePerm(v.p,ans)) return {ok:false,msgs:[NEAR('Die Zahlen sind richtig, aber nicht in der Reihenfolge (x | y | z).')]};
+      return {ok:false,msgs:[wrongMsg(w,w.includes(2)?'Überlege, auf welcher Höhe der Punkt liegt.':'Überlege, über oder unter welchem Punkt er liegt.')]};
+    },
+    tips:[`Skizziere den Quader. Über welchem Punkt liegt ${X}, und auf welcher Höhe?`, why],
+    solution:`<p>${why}</p><p>Also ${X}${pt(...ans)}.</p>`, correct:{p:ans}};
+}
+function gen1aV(){
+  let p=rnd(2,6),q=rnd(2,6); while(q===p) q=rnd(2,6); const h=rnd(3,7), X=pick(['E','F','G','H']);
+  const base={E:[p,0],F:[0,q],G:[-p,0],H:[0,-q]}[X], ans=[base[0],base[1],h], M=[0,0,h];
+  const over={E:'A',F:'B',G:'C',H:'D'}[X];
+  return {
+    html:`<p>Die Grundfläche eines Prismas ist die Raute ABCD mit A${pt(p,0,0)}, B${pt(0,q,0)}, C${pt(-p,0,0)} und D${pt(0,-q,0)}. Die Deckfläche EFGH liegt senkrecht darüber (E über A, F über B, G über C, H über D). Die Höhe beträgt ${h}.</p>
+          <p>Gib den Ortsvektor von <b>${X}</b> an. Gib außerdem den Mittelpunkt M der Deckfläche an.</p>`,
+    inputs:[{key:'g',label:`Ortsvektor von ${X}`,type:'vec3'},{key:'m',label:'Mittelpunkt M der Deckfläche',type:'pt3'}],
+    check(v){
+      const msgs=[]; let ok=true;
+      const w=coordMsg(v.g,ans); if(w.length){ ok=false; msgs.push(samePerm(v.g,ans)?NEAR(`Ortsvektor von ${X}: Die Zahlen sind richtig, aber in falscher Reihenfolge.`):wrongMsg(w,`(Ortsvektor von ${X}: ${X} liegt über ${over}.)`)); }
+      const w2=coordMsg(v.m,M); if(w2.length){ ok=false; msgs.push(NEAR('Mittelpunkt der Deckfläche: Die Diagonalen der Raute schneiden sich über dem Ursprung. Welche Höhe hat die Deckfläche?')); }
+      if(ok) msgs.push(OK()); return {ok,msgs};
+    },
+    tips:[`Die Diagonalen der Raute liegen auf den Achsen. ${X} liegt senkrecht über ${over}.`,`${X} hat x und y wie ${over}, nur die z-Koordinate ist die Höhe ${h}. Der Mittelpunkt der Deckfläche liegt über dem Schnittpunkt der Diagonalen, dem Ursprung.`],
+    solution:`<p>${X} liegt über ${over}${pt(...base,0)}, also ${ov(X)}: ${vec(...ans)}.</p><p>Der Mittelpunkt der Deckfläche liegt über dem Ursprung: M${pt(...M)}.</p>`,
+    correct:{g:ans,m:M}};
+}
+
+/* ---- 1b Verbindungsvektor und Länge ---- */
+function gen1bB(){
+  const P=[rnd(-5,6),rnd(-5,6),rnd(-5,6)], Q=[rnd(-5,6),rnd(-5,6),rnd(-5,6)];
+  if(len2(sub(Q,P))===0) Q[0]+=2;
+  const ans=sub(Q,P);
+  return {
+    html:`<p>Gegeben sind P${pt(...P)} und Q${pt(...Q)}.</p><p>Bestimme den Vektor ${ov('PQ')}.</p>`,
+    inputs:[{key:'v',label:'Vektor PQ',type:'vec3'}],
+    check(v){
+      const w=coordMsg(v.v,ans); if(!w.length) return {ok:true,msgs:[OK()]};
+      if(coordMsg(v.v,sub(P,Q)).length===0) return {ok:false,msgs:[NO('Du hast Anfang und Ende vertauscht. Das ist der Vektor von Q nach P. Merke: Spitze minus Fuß.')]};
+      if(coordMsg(v.v,add(P,Q)).length===0) return {ok:false,msgs:[NO('Für einen Verbindungsvektor wird subtrahiert, nicht addiert.')]};
+      return {ok:false,msgs:[wrongMsg(w,'Rechne jede Koordinate einzeln: Zielpunkt minus Startpunkt.')]};
+    },
+    tips:['Wie kommst du von P nach Q? Welche Schritte in x-, y- und z-Richtung?','PQ = Q − P, Koordinate für Koordinate: Zielpunkt minus Startpunkt.'],
+    solution:`<p>${ov('PQ')} = Q − P = ${vec(...Q)} − ${vec(...P)} = ${vec(...ans)}</p>`, correct:{v:ans}};
+}
+const QUADS=[[2,3,6,7],[1,4,8,9],[2,6,9,11],[4,4,7,9],[1,2,2,3],[2,10,11,15],[3,4,12,13],[6,6,7,11],[2,2,1,3],[4,8,1,9]];
+function gen1bV(){
+  const q=pick(QUADS), comp=shuffle(q.slice(0,3)).map(x=>x*pick([1,-1])), L=q[3];
+  const P=[rnd(-3,4),rnd(-3,4),rnd(-3,4)], Q=add(P,comp);
+  return {
+    html:`<p>Gegeben sind P${pt(...P)} und Q${pt(...Q)}.</p><p>Bestimme den Vektor ${ov('PQ')} und berechne seine Länge. Das Ergebnis ist eine ganze Zahl.</p>`,
+    inputs:[{key:'v',label:'Vektor PQ',type:'vec3'},{key:'l',label:'Länge |PQ|',type:'num'}],
+    check(v){
+      const msgs=[]; let ok=true;
+      if(coordMsg(v.v,comp).length){ ok=false; msgs.push(coordMsg(v.v,mul(-1,comp)).length===0?NO('Vektor: Anfang und Ende sind vertauscht. Spitze minus Fuß!'):NO('Der Vektor stimmt noch nicht: Q − P, Koordinate für Koordinate.')); }
+      if(!close(v.l,L)){ ok=false;
+        if(close(v.l,L*L)) msgs.push(NEAR('Länge: Du hast die Wurzel am Ende vergessen.'));
+        else if(close(v.l,comp.reduce((s,x)=>s+Math.abs(x),0))) msgs.push(NEAR('Länge: Die Summe der Beträge ist nicht die Länge. Quadriere jede Koordinate, addiere und ziehe die Wurzel.'));
+        else msgs.push(NEAR('Länge: Quadriere die drei Koordinaten, addiere sie und ziehe die Wurzel. Das Ergebnis ist eine ganze Zahl.')); }
+      if(ok) msgs.push(OK()); return {ok,msgs};
+    },
+    tips:['Erst den Vektor bestimmen, dann seine Länge.',`Länge: Wurzel aus der Summe der Quadrate der Koordinaten. Tipp: ${q[0]}² + ${q[1]}² + ${q[2]}² ergibt eine Quadratzahl.`],
+    solution:`<p>${ov('PQ')} = ${vec(...comp)}</p><p>|PQ| = √(${comp.map(x=>n2s(x)+'²').join(' + ')}) = √${len2(comp)} = ${L}</p>`, correct:{v:comp,l:L}};
+}
+
+/* ---- 1c Abstand / Streckenlänge ---- */
+function gen1cB(){
+  let d; do{ d=[rnd(-5,5),rnd(-5,5),rnd(-4,4)]; }while(len2(d)<5||isSquare(len2(d))||len2(d)>70);
+  const A=[rnd(-3,4),rnd(-3,4),rnd(-2,3)], B=add(A,d), n=len2(d), ans=Math.sqrt(n);
+  return {
+    html:`<p>Berechne den Abstand der Punkte A${pt(...A)} und B${pt(...B)}.</p><p class="muted">Gib das Ergebnis exakt (z. B. √12) oder auf zwei Nachkommastellen genau an.</p>`,
+    inputs:[{key:'d',label:'Abstand d(A; B)',type:'num',ph:'z. B. √12'}],
+    check(v){
+      if(close(v.d,ans,0.011)) return {ok:true,msgs:[OK()]};
+      if(close(v.d,n,0.011)) return {ok:false,msgs:[NO('Du hast die Wurzel vergessen. Die Summe der Quadrate ist ' + n + '; der Abstand ist die Wurzel daraus.')]};
+      if(close(v.d,Math.abs(d[0])+Math.abs(d[1])+Math.abs(d[2]),0.011)) return {ok:false,msgs:[NO('Der Abstand ist nicht die Summe der Differenzen. Quadriere zuerst, addiere dann, ziehe zuletzt die Wurzel.')]};
+      if(close(v.d,Math.sqrt(d[0]**2+d[1]**2),0.011)||close(v.d,Math.sqrt(d[0]**2+d[2]**2),0.011)||close(v.d,Math.sqrt(d[1]**2+d[2]**2),0.011)) return {ok:false,msgs:[NO('Hast du alle drei Koordinaten berücksichtigt? Im Raum gehören x, y und z in die Rechnung.')]};
+      if(Math.abs(v.d-ans)<0.2) return {ok:false,msgs:[NEAR('Dein Wert liegt sehr nah dran. Gib das Ergebnis exakt als Wurzel oder auf zwei Nachkommastellen an.')]};
+      return {ok:false,msgs:[NO('Rechne die Differenzen der Koordinaten (Punkt B minus Punkt A), quadriere sie, addiere und ziehe die Wurzel.')]};
+    },
+    tips:['Der Abstand ist die Länge des Verbindungsvektors. Bestimme zuerst diesen Vektor.','d = √(Δx² + Δy² + Δz²) mit den drei Koordinatendifferenzen. Wurzel am Ende nicht vergessen.'],
+    solution:`<p>${ov('AB')} = ${vec(...d)}</p><p>d = √(${d.map(x=>n2s(x)+'²').join(' + ')}) = √${n} ≈ ${n2s(ans)}</p>`, correct:{d:ans}};
+}
+function gen1cV(){
+  let A,B,p,den,tries=0;
+  do{ A=[rnd(1,6),rnd(1,6),rnd(1,6)]; B=[rnd(1,8),rnd(1,8),rnd(1,8)]; den=2*(B[1]-A[1]); p=den?(len2(B)-len2(A))/den:NaN; tries++; }
+  while(!(isInt(p)&&Math.abs(p)<=14&&p!==0&&den!==0)&&tries<5000);
+  const dA=q=>A[0]**2+(A[1]-q)**2+A[2]**2, dB=q=>B[0]**2+(B[1]-q)**2+B[2]**2;
+  return {
+    html:`<p>Gegeben sind A${pt(...A)} und B${pt(...B)}. Bestimme einen Punkt P auf der y-Achse, der von A und B gleich weit entfernt ist.</p>`,
+    inputs:[{key:'p',label:'P(0 | p | 0): Wert von p',type:'num'}],
+    check(v){
+      if(close(dA(v.p),dB(v.p),1e-6)) return {ok:true,msgs:[OK()]};
+      return {ok:false,msgs:[NO(`Mit deinem p ist |PA|² = ${n2s(dA(v.p))} und |PB|² = ${n2s(dB(v.p))}. Beide Werte müssen gleich sein.`)]};
+    },
+    tips:['Welche Koordinaten hat jeder Punkt der y-Achse? Was bedeutet „gleich weit entfernt“ als Gleichung?',`P(0 | p | 0). Setze |PA|² = |PB|². Beide Seiten ausrechnen; das p² hebt sich auf, es bleibt eine einfache Gleichung.`],
+    solution:`<p>|PA|² = ${A[0]}² + (${A[1]} − p)² + ${A[2]}² = p² ${n2s(-2*A[1])}p + ${len2(A)}</p><p>|PB|² = ${B[0]}² + (${B[1]} − p)² + ${B[2]}² = p² ${n2s(-2*B[1])}p + ${len2(B)}</p><p>Gleichsetzen: p = ${n2s(p)}. Also P${pt(0,p,0)}.</p>`, correct:{p}};
+}
+
+/* ---- 1e Volumen Prisma mit Raute ---- */
+function gen1eB(){
+  const e=pick([4,6,8,10]); let f=pick([4,6,8,10,12]); while(f===e) f=pick([4,6,8,10,12]); const h=rnd(3,8), V=e*f*h/2;
+  return {
+    html:`<p>Ein Prisma hat als Grundfläche eine Raute mit den Diagonalen e = ${e} und f = ${f}. Die Höhe des Prismas beträgt ${h}.</p><p>Berechne das Volumen.</p>`,
+    inputs:[{key:'v',label:'Volumen V (in VE)',type:'num'}],
+    check(v){
+      if(close(v.v,V)) return {ok:true,msgs:[OK()]};
+      if(close(v.v,e*f*h)) return {ok:false,msgs:[NO('Du hast den Faktor ½ vergessen. Die Fläche einer Raute ist ½ · e · f, denn e · f wäre das Rechteck um die Raute.')]};
+      if(close(v.v,e*f/2)) return {ok:false,msgs:[NO('Das ist nur die Grundfläche. Das Volumen ist Grundfläche mal Höhe.')]};
+      if(close(v.v,e*f*h/8)||close(v.v,V/4)) return {ok:false,msgs:[NEAR('Das ist nur ein Viertel: Du hast ein einziges rechtwinkliges Dreieck verwendet. Die Raute besteht aus vier solchen Dreiecken.')]};
+      return {ok:false,msgs:[NO('Rechne zuerst die Grundfläche (Raute: ½ · e · f), dann mal Höhe.')]};
+    },
+    tips:['Volumen eines Prismas: Grundfläche mal Höhe. Wie berechnest du die Fläche der Raute?','Raute: Die Diagonalen teilen sie in vier rechtwinklige Dreiecke mit den Katheten e/2 und f/2. Oder: A = ½ · e · f.'],
+    solution:`<p>G = ½ · ${e} · ${f} = ${e*f/2}</p><p>V = G · h = ${e*f/2} · ${h} = ${V}</p>`, correct:{v:V}};
+}
+function gen1eV(){
+  const e=pick([4,6,8,10]); let f=pick([4,6,8,10,12]); while(f===e) f=pick([4,6,8,10,12]); const h=rnd(3,8), V=e*f*h/2;
+  const opts=[
+    {t:`4 · ½ · ${e/2} · ${f/2} · ${h} = ${V}`,c:true,ex:'Richtig: Vier rechtwinklige Dreiecke mit den Katheten e/2 und f/2, mal Höhe.'},
+    {t:`½ · ${e} · ${f} · ${h} = ${V}`,c:true,ex:'Richtig: Grundfläche der Raute ½ · e · f, mal Höhe.'},
+    {t:`${e} · ${f} · ${h} = ${e*f*h}`,c:false,ex:'Falsch: e · f ist die Fläche des Rechtecks um die Raute, also doppelt so groß wie die Raute.'},
+    {t:`${f/2} · ${f/2} · ${h} = ${f*f*h/4}`,c:false,ex:`Falsch: Das wäre ein Quadrat mit der Seitenlänge ${f/2}. Eine Raute mit den Diagonalen ${e} und ${f} ist aber kein solches Quadrat.`}];
+  const order=shuffle(opts);
+  return {
+    html:`<p>Ein Prisma hat als Grundfläche eine Raute mit den Diagonalen e = ${e} und f = ${f}. Die Höhe beträgt ${h}.</p><p>Welche der Rechnungen liefern das Volumen? Es können mehrere richtig sein. Wähle alle richtigen aus.</p>`,
+    inputs:[{key:'c',label:'Wähle aus',type:'checks',options:order.map(o=>o.t)}],
+    check(v){
+      const wrong=[]; order.forEach((o,i)=>{ if(!!v.c[i]!==o.c) wrong.push(i); });
+      const msgs=order.map((o,i)=>({t:(!!v.c[i]===o.c)?'ok':'no',h:`<b>${o.t}</b> ${o.ex}`}));
+      if(!wrong.length) return {ok:true,msgs:[OK(' Hier die Begründungen:'),...msgs]};
+      return {ok:false,msgs:[NO(`Bei ${wrong.length} Aussage(n) liegst du falsch. Überlege noch einmal, wie die Fläche einer Raute entsteht. Tipp 1 hilft.`)]};
+    },
+    tips:['Volumen = Grundfläche · Höhe. Wie groß ist die Rautenfläche? Zeichne die Raute mit ihren Diagonalen.','Die Diagonalen zerlegen die Raute in vier Dreiecke mit den Katheten e/2 und f/2. Prüfe jede Rechnung: Welche Grundfläche steckt darin?'],
+    solution:`<p>Richtig sind genau die Rechnungen mit der Grundfläche ½ · ${e} · ${f} = ${e*f/2}:</p><ul>${order.map(o=>`<li><b>${o.t}</b>: ${o.ex}</li>`).join('')}</ul>`,
+    correct:{c:order.map(o=>o.c)}};
+}
+
+/* ---- 1f Schrägbilder beurteilen ---- */
+const POOL1F=[
+ {q:'Du siehst ein Prisma in der <b>Draufsicht</b> (Blick senkrecht von oben auf die Grundfläche). Was erkennst du dort gut?',o:['Die Form der Grundfläche in wahrer Gestalt','Die Höhe des Prismas','Die verdeckten Kanten und den Raumeindruck'],c:0,ex:'In der Draufsicht erscheint die Grundfläche unverzerrt, die Höhe und die Tiefe sind aber nicht zu sehen. Der Körper wirkt flach.'},
+ {q:'Ein Prisma mit rautenförmiger Grundfläche wird <b>fast waagerecht von der Seite</b> betrachtet. Wie wirkt es?',o:['Wie ein Rechteck bzw. Quader, die Raute ist nicht erkennbar','Wie eine große Raute','Wie ein Dreieck'],c:0,ex:'Die Grundfläche wird zu einer Linie verkürzt. Die Höhe ist gut ablesbar, die Form der Grundfläche nicht.'},
+ {q:'Welche Darstellung eignet sich am besten, um die <b>Gestalt</b> des Körpers zu erfassen?',o:['Die Schrägansicht von schräg oben','Die Draufsicht','Die Seitenansicht'],c:0,ex:'Die Schrägansicht zeigt Grund- und Deckfläche, Höhe und verdeckte Kanten (gestrichelt) zugleich und vermittelt den besten Raumeindruck.'},
+ {q:'Was ist ein <b>Nachteil</b> der Schrägansicht?',o:['Längen und Winkel erscheinen verzerrt und lassen sich nicht direkt ablesen','Man erkennt keine Höhe','Der Körper wirkt flach'],c:0,ex:'Dafür ist der Raumeindruck der Vorteil. Zum genauen Messen sind Draufsicht oder Seitenansicht besser.'},
+ {q:'Du willst die <b>Diagonalen der Rautenfläche</b> ablesen. Welche Ansicht nutzt du?',o:['Die Draufsicht','Die Ansicht von der Seite','Keine, das geht nie'],c:0,ex:'Nur in der Draufsicht erscheint die Raute in wahrer Gestalt. In der Schrägansicht sind Längen verzerrt.'},
+ {q:'Du sollst die <b>Höhe</b> des Prismas ablesen. Welche Ansicht passt am besten?',o:['Die Ansicht fast waagerecht von der Seite','Die Draufsicht','Eine Ansicht senkrecht von unten'],c:0,ex:'In der Seitenansicht erscheint die Höhe unverzerrt, in der Draufsicht verschwindet sie.'}];
+function gen1fB(){
+  const e=pick(POOL1F), order=shuffle(e.o.map((t,i)=>({t,c:i===e.c})));
+  return {
+    html:`<p>${e.q}</p>`,
+    inputs:[{key:'r',label:'Deine Antwort',type:'radio',options:order.map(o=>o.t)}],
+    check(v){ const o=order[v.r]; if(o.c) return {ok:true,msgs:[OK(' '+e.ex)]}; return {ok:false,msgs:[NO('Überlege, welche Information in der jeweiligen Ansicht unverzerrt oder überhaupt sichtbar ist. Tipp 1 hilft.')]}; },
+    tips:['Stell dir vor, aus welcher Richtung du auf das Prisma schaust. Welche Maße siehst du „in echt“, welche nicht?','Draufsicht: wahre Grundfläche. Seitenansicht: wahre Höhe. Schrägansicht: Raumeindruck, aber verzerrte Maße.'],
+    solution:`<p>${order.find(o=>o.c).t}</p><p>${e.ex}</p>`, correct:{r:order.findIndex(o=>o.c)}};
+}
+const bild=(P)=>[P[1]-P[0]/2,P[2]-P[0]/2];
+function gen1fV(){
+  const P=[rnd(1,5),rnd(-2,5),rnd(-2,6)], b=bild(P);
+  return {
+    html:`<p>Im Schrägbild gilt: Der Punkt (x | y | z) erscheint bei (y − x/2 | z − x/2). Der Punkt P${pt(...P)} erscheint im Bild bei ${pt(...b)}.</p><p>Gib einen <b>anderen</b> Punkt Q ≠ P an, der im Schrägbild an <b>derselben Stelle</b> wie P erscheint.</p>`,
+    inputs:[{key:'q',label:'Koordinaten von Q',type:'pt3'}],
+    check(v){
+      const Q=v.q, d=sub(Q,P), bq=bild(Q);
+      if(len2(d)<1e-9) return {ok:false,msgs:[NO('Das ist der Punkt P selbst. Gesucht ist ein anderer Punkt.')]};
+      if(close(bq[0],b[0])&&close(bq[1],b[1])) return {ok:true,msgs:[OK(' Alle solchen Punkte liegen auf einer Geraden durch P in Blickrichtung (2 | 1 | 1). Deshalb kann man aus einem Schrägbild allein nicht eindeutig auf einen Raumpunkt schließen.')]};
+      return {ok:false,msgs:[NO(`Dein Punkt erscheint bei ${pt(...bq)}, P aber bei ${pt(...b)}. Die Bildkoordinaten müssen übereinstimmen.`)]};
+    },
+    tips:['Zwei Punkte erscheinen an derselben Stelle, wenn ihre Bildkoordinaten (y − x/2 | z − x/2) gleich sind. Probiere etwa eine neue x-Koordinate.',`Setze zum Beispiel x = ${P[0]+2}: Welche y- und z-Koordinate liefern dasselbe Bild? Erkenne das Muster: Um welchen Vektor hast du P verschoben?`],
+    solution:`<p>Verschiebt man P um ${vec(2,1,1)} (oder ein Vielfaches), ändern sich die Bildkoordinaten nicht: y − x/2 wächst um 1 − 1 = 0, z − x/2 um 1 − 1 = 0.</p><p>Beispiel: Q${pt(...add(P,[2,1,1]))}.</p>`, correct:{q:add(P,[2,1,1])}};
+}
+
+/* ---- 2a Punkte im Schrägbild ---- */
+function gen2aB(){
+  const P=[pick([-4,-2,2,4,6,-3,3,5]),rnd(-3,6),rnd(-3,7)], b=bild(P);
+  return {
+    html:`<p>Im Schrägbild wird 1 Einheit in x-Richtung als ½ Kästchen nach links und ½ Kästchen nach unten gezeichnet. Die y-Achse zeigt nach rechts, die z-Achse nach oben.</p><p>Wo liegt der Punkt P${pt(...P)} im Schrägbild? Gib die Lage als (Kästchen nach rechts | Kästchen nach oben) vom Ursprung aus an.</p>`,
+    inputs:[{key:'b',label:'Lage im Bild (y-Richtung | z-Richtung)',type:'pt2'}],
+    check(v){
+      const w=coordMsg(v.b,b); if(!w.length) return {ok:true,msgs:[OK()]};
+      if(close(v.b[0],P[1]-P[0])&&close(v.b[1],P[2]-P[0])) return {ok:false,msgs:[NO('Pro Einheit in x-Richtung verschiebst du nur um ½ Kästchen (nicht um 1).')]};
+      if(close(v.b[0],P[1]+P[0]/2)&&close(v.b[1],P[2]+P[0]/2)) return {ok:false,msgs:[NO(P[0]>0?'Bei positivem x geht es nach links unten, also wird abgezogen.':'Bei negativem x geht es nach rechts oben, also wird addiert (minus mal minus).')]};
+      return {ok:false,msgs:[NEAR('Rechne beide Bildkoordinaten einzeln: y − x/2 und z − x/2.')]};
+    },
+    tips:['Wo landet der Punkt (1 | 0 | 0)? Setze den Punkt Schritt für Schritt zusammen: erst x, dann y, dann z.',`Bildkoordinaten: (y − x/2 | z − x/2). Hier: x = ${P[0]}.`],
+    solution:`<p>(${n2s(P[1])} − ${n2s(P[0]/2)} | ${n2s(P[2])} − ${n2s(P[0]/2)}) = ${pt(...b)}</p>`, correct:{b}};
+}
+function gen2aV(){
+  const x=pick([-4,-2,2,4,6,-3,3]), y=rnd(-2,6), z=rnd(-2,6), b=[y-x/2,z-x/2];
+  return {
+    html:`<p>Im Schrägbild erscheint ein Punkt R mit der x-Koordinate ${n2s(x)} an der Stelle ${pt(...b)} (Kästchen nach rechts | Kästchen nach oben; 1 Einheit in x-Richtung entspricht ½ Kästchen nach links und ½ nach unten).</p><p>Bestimme die Koordinaten y und z von R.</p>`,
+    inputs:[{key:'r',label:'y und z',type:'pt2'}],
+    check(v){
+      const w=coordMsg(v.r,[y,z]); if(!w.length) return {ok:true,msgs:[OK(' Ohne die x-Koordinate wäre der Punkt aus dem Bild nicht eindeutig bestimmbar.')]};
+      if(close(v.r[0],b[0]-x/2)&&close(v.r[1],b[1]-x/2)) return {ok:false,msgs:[NO('Du hast das Vorzeichen der Umkehrung vertauscht. Aus y − x/2 = Bild folgt y = Bild + x/2.')]};
+      if(close(v.r[0],b[0])&&close(v.r[1],b[1])) return {ok:false,msgs:[NO('Das sind die Bildkoordinaten. Rechne die Verschiebung durch x wieder heraus.')]};
+      return {ok:false,msgs:[wrongMsg(w.map(i=>i+1),'')]};
+    },
+    tips:['Die Bildformel lautet (y − x/2 | z − x/2). Wie kehrst du sie um?','Aus y − x/2 = Bildwert folgt y = Bildwert + x/2. Genauso für z.'],
+    solution:`<p>y = ${n2s(b[0])} + ${n2s(x/2)} = ${n2s(y)}, z = ${n2s(b[1])} + ${n2s(x/2)} = ${n2s(z)}</p>`, correct:{r:[y,z]}};
+}
+
+/* ---- 2b Kollinearität ---- */
+function gen2bB(){
+  const u=[0,0,0].map(()=>pick([-4,-3,-2,-1,1,2,3,4,5])), r=pick([2,3,-1,-2,-3]), coll=Math.random()<.5;
+  let v=mul(r,u); if(!coll){ const k=rnd(0,2); v[k]+=pick([1,-1,2]); }
+  const isC=colinear(u,v)!==null, rr=colinear(u,v);
+  const q=u.map((x,i)=>v[i]/x);
+  return {
+    html:`<p>Gegeben sind ${vec(...u)} = <b>u</b> und ${vec(...v)} = <b>v</b>.</p><p>Prüfe, ob u und v kollinear sind. Falls ja, gib den Faktor r mit v = r · u an.</p>`,
+    inputs:[{key:'c',label:'Ergebnis',type:'radio',options:['kollinear','nicht kollinear']},{key:'r',label:'Faktor r (nur falls kollinear, sonst 0 eintragen)',type:'num'}],
+    check(v2){
+      const rows=q.map((x,i)=>`Zeile ${i+1}: ${n2s(v[i])} = r · ${n2s(u[i])} gibt r = ${n2s(x)}`).join('<br>');
+      if(isC){
+        if(v2.c!==0) return {ok:false,msgs:[NO('Prüfe jede Zeile einzeln, ob derselbe Faktor r herauskommt:<br>'+rows)]};
+        if(!close(v2.r,rr)) return {ok:false,msgs:[NEAR('Richtig kollinear. Der Faktor r stimmt noch nicht: Teile eine Koordinate von v durch die gleiche Koordinate von u.')]};
+        return {ok:true,msgs:[OK(' In jeder Zeile ergibt sich r = '+n2s(rr)+'.')]};
+      }
+      if(v2.c!==1) return {ok:false,msgs:[NO('Prüfe alle Zeilen: Der Faktor muss in jeder Zeile gleich sein.<br>'+rows)]};
+      return {ok:true,msgs:[OK(' Die Zeilen liefern verschiedene Faktoren, also gibt es kein r.')]};
+    },
+    tips:['Kollinear heißt: Ein Vektor ist ein Vielfaches des anderen. Welchen Faktor siehst du in der ersten Zeile?','Ansatz v = r · u. Rechne in jeder Zeile r aus. Nur wenn überall derselbe Wert herauskommt, sind sie kollinear.'],
+    solution:`<p>Ansatz ${'v = r · u'}:</p><p>${q.map((x,i)=>`Zeile ${i+1}: ${n2s(v[i])} = r · ${n2s(u[i])} gibt r = ${n2s(x)}`).join('<br>')}</p><p>${isC?`Überall ${n2s(rr)}: kollinear mit r = ${n2s(rr)}.`:'Die Faktoren unterscheiden sich: nicht kollinear.'}</p>`,
+    correct:{c:isC?0:1,r:isC?rr:0}};
+}
+function gen2bV(){
+  const u=[pick([1,2,3,-1,-2]),rnd(-4,4)||2,rnd(-4,5)||3], r=pick([2,3,-2,-1]), k=r*u[0], s=r*u[1], t=r*u[2];
+  return {
+    html:`<p>Gegeben ist ${vec(...u)} = <b>u</b>. Bestimme die Zahlen s und t so, dass der Vektor ${vec(n2s(k),'s','t')} kollinear zu u ist.</p>`,
+    inputs:[{key:'s',label:'s',type:'num'},{key:'t',label:'t',type:'num'}],
+    check(v){
+      const msgs=[]; let ok=true;
+      if(!close(v.s,s)){ok=false;msgs.push(NEAR('s: Bestimme zuerst r aus der ersten Zeile und multipliziere die zweite Koordinate von u mit r.'));}
+      if(!close(v.t,t)){ok=false;msgs.push(NEAR('t: Multipliziere die dritte Koordinate von u mit r.'));}
+      if(ok) msgs.push(OK()); return {ok,msgs};
+    },
+    tips:['Kollinear heißt, es gibt einen Faktor r. Welchen kennst du schon aus der ersten Zeile?',`Erste Zeile: ${n2s(k)} = r · ${n2s(u[0])}, also r = ${n2s(r)}. Damit s und t aus den anderen Zeilen.`],
+    solution:`<p>Zeile 1: ${n2s(k)} = r · ${n2s(u[0])} gibt r = ${n2s(r)}.</p><p>s = ${n2s(r)} · ${n2s(u[1])} = ${n2s(s)}, t = ${n2s(r)} · ${n2s(u[2])} = ${n2s(t)}.</p>`, correct:{s,t}};
+}
+
+/* ---- 2c kollinear und länger/kürzer ---- */
+function gen2cB(){
+  const u=[rnd(-3,4)||2,rnd(-3,4)||1,rnd(-3,5)||3];
+  return {
+    html:`<p>Gegeben ist ${vec(...u)} = <b>u</b>. Gib die Koordinaten eines Vektors an, der <b>kollinear</b> zu u und <b>länger</b> als u ist.</p>`,
+    inputs:[{key:'v',label:'Dein Vektor',type:'vec3'}],
+    check(v){
+      const r=colinear(u,v.v);
+      if(len2(v.v)<1e-9) return {ok:false,msgs:[NO('Der Nullvektor ist zu keinem Vektor länger.')]};
+      if(r===null) return {ok:false,msgs:[NO('Dein Vektor ist kein Vielfaches von u. Multipliziere alle drei Koordinaten von u mit derselben Zahl.')]};
+      if(close(r,1)) return {ok:false,msgs:[NO('Das ist derselbe Vektor. Er soll länger sein.')]};
+      if(Math.abs(r)<1) return {ok:false,msgs:[NEAR('Kollinear ist er, aber er ist kürzer als u. Wähle einen Faktor mit Betrag größer als 1.')]};
+      return {ok:true,msgs:[OK(' Dein Faktor ist r = '+n2s(r)+'. Jeder Faktor mit |r| > 1 funktioniert.')]};
+    },
+    tips:['Kollinear: Der neue Vektor ist ein Vielfaches von u. Wie wirkt sich der Faktor auf die Länge aus?','Multipliziere u mit einer Zahl, deren Betrag größer als 1 ist, z. B. 2 oder −3.'],
+    solution:`<p>z. B. 2 · u = ${vec(...mul(2,u))}. Die Länge verdoppelt sich: |2u| = 2·|u|.</p>`, correct:{v:mul(2,u)}};
+}
+function gen2cV(){
+  const u=[2*rnd(-3,3)||4,2*rnd(-3,3)||2,2*rnd(-3,4)||6];
+  return {
+    html:`<p>Gegeben ist ${vec(...u)} = <b>u</b>. Gib einen Vektor an, der zu u kollinear, <b>entgegengesetzt gerichtet</b> und <b>halb so lang</b> wie u ist.</p>`,
+    inputs:[{key:'v',label:'Dein Vektor',type:'vec3'}],
+    check(v){
+      const r=colinear(u,v.v);
+      if(r===null) return {ok:false,msgs:[NO('Dein Vektor ist kein Vielfaches von u.')]};
+      if(close(r,-0.5)) return {ok:true,msgs:[OK()]};
+      if(close(r,0.5)) return {ok:false,msgs:[NEAR('Halb so lang stimmt, aber die Richtung ist gleich. Entgegengesetzt braucht ein negatives Vorzeichen.')]};
+      if(close(r,-2)) return {ok:false,msgs:[NEAR('Entgegengesetzt stimmt, aber der Vektor ist doppelt so lang. Halb so lang bedeutet Faktor ½.')]};
+      return {ok:false,msgs:[NO(`Dein Faktor ist r = ${n2s(r)}. Gesucht: entgegengesetzt (r negativ) und halb so lang (|r| = ½).`)]};
+    },
+    tips:['Welches Vorzeichen und welchen Betrag muss der Faktor r haben?','Gesucht ist r = −½. Multipliziere alle Koordinaten mit −½.'],
+    solution:`<p>r = −½: ${vec(...mul(-0.5,u))}</p>`, correct:{v:mul(-0.5,u)}};
+}
+
+/* ---- 2d Mittelpunkt ---- */
+function gen2dB(){
+  const A=[rnd(-4,5),rnd(-4,5),rnd(-4,6)]; const B=A.map(x=>x+2*rnd(-3,4)+(Math.random()<.3?1:0)); const M=A.map((x,i)=>(x+B[i])/2);
+  return {
+    html:`<p>Gegeben sind A${pt(...A)} und B${pt(...B)}. Berechne den Mittelpunkt M der Strecke AB.</p>`,
+    inputs:[{key:'m',label:'Koordinaten von M',type:'pt3'}],
+    check(v){
+      const w=coordMsg(v.m,M); if(!w.length) return {ok:true,msgs:[OK()]};
+      if(coordMsg(v.m,add(A,B)).length===0) return {ok:false,msgs:[NO('Du hast die Koordinaten nur addiert. Für den Mittelpunkt muss die Summe noch halbiert werden.')]};
+      if(coordMsg(v.m,sub(B,A)).length===0) return {ok:false,msgs:[NO('Das ist der Verbindungsvektor AB. Für den Mittelpunkt addierst du die Koordinaten und halbierst.')]};
+      return {ok:false,msgs:[wrongMsg(w)]};
+    },
+    tips:['Der Mittelpunkt liegt genau in der Mitte. Wie bestimmst du den Mittelwert zweier Zahlen?','M = ½ · (A + B), jede Koordinate einzeln.'],
+    solution:`<p>${ov('OM')} = ½ · (${vec(...A)} + ${vec(...B)}) = ½ · ${vec(...add(A,B))} = ${vec(...M)}</p>`, correct:{m:M}};
+}
+function gen2dV(){
+  const A=[rnd(-4,5),rnd(-4,5),rnd(-4,6)], B=[rnd(-5,7),rnd(-5,7),rnd(-5,8)], M=A.map((x,i)=>(x+B[i])/2);
+  return {
+    html:`<p>Der Punkt M${pt(...M)} ist der Mittelpunkt der Strecke AB. Der Punkt A hat die Koordinaten ${pt(...A)}.</p><p>Bestimme den Punkt B.</p>`,
+    inputs:[{key:'b',label:'Koordinaten von B',type:'pt3'}],
+    check(v){
+      const w=coordMsg(v.b,B); if(!w.length) return {ok:true,msgs:[OK()]};
+      if(coordMsg(v.b,sub(M,A)).length===0) return {ok:false,msgs:[NO('Das ist der Vektor von A nach M. Du musst diesen Weg noch einmal von M aus gehen.')]};
+      if(coordMsg(v.b,add(M,A)).length===0) return {ok:false,msgs:[NO('Rechne nicht M + A. Von A nach M ist es genauso weit wie von M nach B.')]};
+      return {ok:false,msgs:[wrongMsg(w)]};
+    },
+    tips:['Von A nach M geht man einen Weg. Wie geht es von M nach B weiter?','M = ½ · (A + B). Löse nach B auf: B = 2 · M − A.'],
+    solution:`<p>B = 2 · M − A = ${vec(...mul(2,M))} − ${vec(...A)} = ${vec(...B)}</p>`, correct:{b:B}};
+}
+
+/* ---- 2e Verschiebung ---- */
+function gen2eB(){
+  const P=[rnd(-4,5),rnd(-4,5),rnd(-4,6)], u=[rnd(-3,3),rnd(-3,3),rnd(-3,3)]; if(len2(u)===0) u[0]=2; const P2=add(P,u);
+  return {
+    html:`<p>Der Punkt A${pt(...P)} wird mit dem Vektor ${vec(...u)} verschoben. Berechne den Bildpunkt A′.</p>`,
+    inputs:[{key:'a',label:'Koordinaten von A′',type:'pt3'}],
+    check(v){
+      const w=coordMsg(v.a,P2); if(!w.length) return {ok:true,msgs:[OK()]};
+      if(coordMsg(v.a,sub(P,u)).length===0) return {ok:false,msgs:[NO('Du hast den Verschiebungsvektor abgezogen. Verschieben bedeutet: Punkt plus Vektor.')]};
+      return {ok:false,msgs:[wrongMsg(w,'Addiere Koordinate für Koordinate.')]};
+    },
+    tips:['Verschieben heißt: Von A aus den Vektor entlanggehen.',"A′ = A + u, jede Koordinate einzeln addieren."],
+    solution:`<p>${ov("OA′")} = ${vec(...P)} + ${vec(...u)} = ${vec(...P2)}</p>`, correct:{a:P2}};
+}
+function gen2eV(){
+  const P=[rnd(-4,5),rnd(-4,5),rnd(-4,6)], u=[rnd(-3,3),rnd(-3,3),rnd(-3,3)]; if(len2(u)===0) u[1]=-2; const P2=add(P,u);
+  return {
+    html:`<p>Ein Dreieck wird verschoben. Dabei wird der Punkt A${pt(...P)} auf A′${pt(...P2)} abgebildet.</p><p>Bestimme den Verschiebungsvektor u. Gib außerdem an, auf welchen Punkt B′ der Punkt B${pt(...add(P,[1,2,-1]))} abgebildet wird.</p>`,
+    inputs:[{key:'u',label:'Verschiebungsvektor u',type:'vec3'},{key:'b',label:"Koordinaten von B′",type:'pt3'}],
+    check(v){
+      const msgs=[]; let ok=true; const B2=add(add(P,[1,2,-1]),u);
+      if(coordMsg(v.u,u).length){ ok=false; msgs.push(coordMsg(v.u,mul(-1,u)).length===0?NO('Vektor u: Spitze minus Fuß, also A′ − A (nicht A − A′).'):NO('Vektor u: Bestimme A′ − A, Koordinate für Koordinate.')); }
+      if(coordMsg(v.b,B2).length){ ok=false; msgs.push(NEAR('B′: Alle Punkte werden um denselben Vektor u verschoben. Addiere u zu B.')); }
+      if(ok) msgs.push(OK()); return {ok,msgs};
+    },
+    tips:['Der Verschiebungsvektor führt von A nach A′.',"u = A′ − A. Danach B′ = B + u."],
+    solution:`<p>u = A′ − A = ${vec(...P2)} − ${vec(...P)} = ${vec(...u)}</p><p>B′ = B + u = ${vec(...add(P,[1,2,-1]))} + ${vec(...u)} = ${vec(...add(add(P,[1,2,-1]),u))}</p>`, correct:{u,b:add(add(P,[1,2,-1]),u)}};
+}
+
+/* ---- 2f Parameter, Länge vorgegeben ---- */
+function gen2fB(){
+  const q=pick([[1,2,2,3],[2,3,6,7],[2,1,2,3],[2,2,1,3],[1,4,8,9]]), w=shuffle(q.slice(0,3)).map((x,i)=>x*pick([1,1,-1])), L=q[3], k=pick([2,3]), A=[rnd(-2,4),rnd(-2,4),rnd(-2,4)];
+  const coord=(i)=>{const c=w[i]===1?'t':w[i]===-1?'−t':`${n2s(w[i])}t`; return A[i]===0?c:`${n2s(A[i])} ${w[i]<0?'−':'+'} ${n2s(Math.abs(w[i]))===1?'':n2s(Math.abs(w[i]))}t`.replace(/\s+/g,' ');};
+  const bt=`B<sub>t</sub>(${[0,1,2].map(i=>{const a=A[i],c=Math.abs(w[i]),sg=w[i]<0?'−':'+'; return a===0?`${w[i]<0?'−':''}${c===1?'':c}t`:`${n2s(a)} ${sg} ${c===1?'':c}t`;}).join(' | ')})`;
+  return {
+    html:`<p>Gegeben sind A${pt(...A)} und ${bt}.</p><p>Für welche Werte von t hat die Strecke ${ov('AB<sub>t</sub>')} die Länge ${L*k}? Gib alle Werte an (getrennt durch Semikolon).</p>`,
+    inputs:[{key:'t',label:'Werte von t',type:'list',ph:'z. B. 2; −2'}],
+    check(v){
+      const sol=[k,-k]; if(sameSet(v.t,sol)) return {ok:true,msgs:[OK()]};
+      const u=uniq(v.t);
+      if(u.length===1&&close(Math.abs(u[0]),k)) return {ok:false,msgs:[NEAR('Ein Wert stimmt. Weil nur der Betrag |t| eine Rolle spielt, gibt es noch einen zweiten Wert.')]};
+      return {ok:false,msgs:[NO(`Stelle zuerst den Vektor ${'AB<sub>t</sub>'} auf und klammere t aus. Seine Länge ist ${L}·|t|.`)]};
+    },
+    tips:['Stelle den Vektor von A nach B_t auf. Was fällt dir an den Koordinaten auf?',`Klammere t aus: AB_t = t · ${'('+w.map(n2s).join(', ')+')'}. Länge = |t| · ${L}. Setze das gleich ${L*k}.`],
+    solution:`<p>${ov('AB<sub>t</sub>')} = ${vec(...w.map(x=>(x===1?'t':x===-1?'−t':n2s(x)+'t')))} = t · ${vec(...w)}</p><p>Länge: |t| · √(${w.map(x=>n2s(x)+'²').join(' + ')}) = |t| · ${L}</p><p>|t| · ${L} = ${L*k} gibt |t| = ${k}, also t = ${k} oder t = ${-k}.</p>`, correct:{t:[k,-k]}};
+}
+function gen2fV(){
+  let a0,a1,p,qq,c,L2,tries=0;
+  do{ a0=rnd(-3,5); a1=rnd(-3,5); p=rnd(-3,4); qq=a0+a1-p; c=rnd(1,3); L2=p*p+qq*qq+c*c-2*a0*a1; tries++; }
+  while(!(a0!==a1&&L2>0&&isSquare(L2)&&L2>=4)&&tries<20000);
+  const L=Math.sqrt(L2), A=[rnd(-2,3),rnd(-2,3),rnd(-2,3)];
+  const lc=(v,k)=>v+(k===0?'':(k>0?` + ${k}`:` − ${-k}`));
+  const D=`D<sub>a</sub>(${lc('a',A[0]-p+p-p)}`; // placeholder not used
+  const dx=A[0]-p, dy=A[1]-qq, dz=A[2]+c;
+  const aw=(v)=>[v-p,v-qq,c]; const lenA=(v)=>Math.sqrt(len2(aw(v)));
+  return {
+    html:`<p>Gegeben sind A${pt(...A)} und D<sub>a</sub>(${lin('a',dx)} | ${lin('a',dy)} | ${dz}).</p><p>Bestimme einen Wert von a, für den die Strecke von A nach D<sub>a</sub> genau die Länge ${L} hat.</p>`,
+    inputs:[{key:'a',label:'Wert von a',type:'num'}],
+    check(v){
+      if(close(lenA(v.a),L,1e-6)) return {ok:true,msgs:[OK(' Es gibt zwei Lösungen: a = '+n2s(a0)+' und a = '+n2s(a1)+'.')]};
+      return {ok:false,msgs:[NO(`Mit deinem a hat die Strecke die Länge ${n2s(Math.round(lenA(v.a)*1000)/1000)} statt ${L}. Stelle den Vektor ${'AD<sub>a</sub>'} auf, setze seine Länge gleich ${L} und quadriere.`)]};
+    },
+    tips:[`Stelle den Vektor ${'AD<sub>a</sub>'} auf. Welche Koordinaten enthalten a?`,`Die Länge soll ${L} sein: (a − ${n2s(p)})² + (a − ${n2s(qq)})² + ${c}² = ${L2}. Löse die quadratische Gleichung (Normalform, dann pq-Formel).`],
+    solution:`<p>${ov('AD<sub>a</sub>')} = ${vec(lin('a',-p),lin('a',-qq),c)}</p><p>(a − ${n2s(p)})² + (a − ${n2s(qq)})² + ${c}² = ${L2}</p><p>2a² ${n2s(-2*(p+qq))>=0?'+ '+n2s(-2*(p+qq)):'− '+n2s(2*(p+qq))}a + ${p*p+qq*qq+c*c-L2} = 0 → a² − ${n2s(a0+a1)}a + ${n2s(a0*a1)} = 0</p><p>a = ${n2s(a0)} oder a = ${n2s(a1)}</p>`, correct:{a:a0}};
+}
+
+/* ---- 3 Vektoren addieren ---- */
+function gen3B(){
+  const a=[rnd(-4,4),rnd(-4,4)],b=[rnd(-4,4),rnd(-4,4)],c=[rnd(-3,3),rnd(-3,3)], s=add(add(a,b),c);
+  return {
+    html:`<p>Gegeben sind ${vec(...a)} = <b>a</b>, ${vec(...b)} = <b>b</b> und ${vec(...c)} = <b>c</b>.</p><p>Bestimme <b>a + b + c</b> und gib das Ergebnis als Vektor an. Zeichne die Pfeilkette zur Kontrolle auf Papier.</p>`,
+    inputs:[{key:'s',label:'a + b + c',type:'vec2'}],
+    check(v){ const w=coordMsg(v.s,s); if(!w.length) return {ok:true,msgs:[OK(' Die Pfeilkette a, b, c endet bei '+pt(...s)+'.')]}; return {ok:false,msgs:[wrongMsg(w,'Addiere die oberen und die unteren Koordinaten getrennt.')]}; },
+    tips:['Zeichnerisch hängst du die Pfeile aneinander (Fuß an Spitze). Was passiert dabei mit den Koordinaten?','Addiere die erste Koordinaten aller Vektoren, dann die zweiten.'],
+    solution:`<p>${vec(...a)} + ${vec(...b)} + ${vec(...c)} = ${vec(...s)}</p>`, correct:{s}};
+}
+function gen3V(){
+  const a=[rnd(-4,4),rnd(-4,4)],b=[rnd(-4,4),rnd(-4,4)],c=[rnd(-3,3),rnd(-3,3)];
+  const ka=pick([1,2,3]),kb=pick([-1,-2,2]),kc=pick([-2,-1,1,2]); const s=add(add(mul(ka,a),mul(kb,b)),mul(kc,c));
+  const term=(k,n)=>`${k<0?'−':'+'} ${Math.abs(k)===1?'':Math.abs(k)}${n}`;
+  const txt=`${ka===1?'':ka}a ${term(kb,'b')} ${term(kc,'c')}`;
+  const abs=add(add(mul(ka,a),mul(Math.abs(kb),b)),mul(Math.abs(kc),c));
+  return {
+    html:`<p>Gegeben sind ${vec(...a)} = <b>a</b>, ${vec(...b)} = <b>b</b> und ${vec(...c)} = <b>c</b>.</p><p>Bestimme <b>${txt}</b>.</p>`,
+    inputs:[{key:'s',label:txt,type:'vec2'}],
+    check(v){
+      const w=coordMsg(v.s,s); if(!w.length) return {ok:true,msgs:[OK()]};
+      if(coordMsg(v.s,abs).length===0) return {ok:false,msgs:[NO('Beachte die Minuszeichen: Subtrahieren heißt, den Gegenvektor zu addieren (alle Koordinaten bekommen das umgekehrte Vorzeichen).')]};
+      return {ok:false,msgs:[wrongMsg(w,'Rechne erst die Vielfachen aus, dann addiere.')]};
+    },
+    tips:['Rechne zuerst jeden Vektor mit seinem Faktor aus. Was bewirkt ein Minuszeichen?','Ein Minus vor einem Vektor kehrt alle seine Koordinaten um. Danach koordinatenweise addieren.'],
+    solution:`<p>${txt.replace(/\+ /,'+ ')} = ${vec(...mul(ka,a))} ${kb<0?'−':'+'} ${vec(...mul(Math.abs(kb),b))} ${kc<0?'−':'+'} ${vec(...mul(Math.abs(kc),c))} = ${vec(...s)}</p>`, correct:{s}};
+}
+
+/* ---- 4 Nullstellen ---- */
+function polyStr(c){
+  let s=''; Object.keys(c).map(Number).sort((a,b)=>b-a).forEach(d=>{ const k=c[d]; if(!k) return; const abs=Math.abs(k); const t=(abs===1&&d>0?'':abs)+(d>0?'x'+(d>1?sup(d):''):''); if(!s) s=(k<0?'−':'')+t; else s+=` ${k<0?'−':'+'} ${t}`; });
+  return s;
+}
+function gen4B(){
+  const typ=pick(['A','B','C']); let f,roots,steps;
+  if(typ==='A'){ const a=rnd(2,9); f=`x${sup(2)} − ${a}x`; roots=[0,a]; steps=`<p>x² − ${a}x = x · (x − ${a}) = 0</p><p>x = 0 oder x − ${a} = 0, also x = 0 und x = ${a}.</p>`; }
+  else if(typ==='B'){ const k=pick([2,3,4,5]), m=rnd(1,6); const sg=pick([1,-1]); f=polyStr({2:k,1:k*m*sg}); roots=[0,-m*sg]; steps=`<p>${f} = ${k}x · (x ${sg>0?'+':'−'} ${m}) = 0</p><p>x = 0 oder x ${sg>0?'+':'−'} ${m} = 0, also x = 0 und x = ${n2s(-m*sg)}.</p>`; }
+  else { const a=rnd(2,7); f=`x${sup(3)} − ${a}x${sup(2)}`; roots=[0,a]; steps=`<p>x³ − ${a}x² = x² · (x − ${a}) = 0</p><p>x² = 0 oder x − ${a} = 0, also x = 0 (doppelte Nullstelle) und x = ${a}.</p>`; }
+  return {
+    html:`<p>Berechne die Nullstellen der Funktion f mit f(x) = ${f}.</p><p class="muted">Verfahren: Ausklammern und Satz vom Nullprodukt.</p>`,
+    inputs:[{key:'n',label:'Nullstellen',type:'list',ph:'z. B. 0; 3'}],
+    check(v){
+      if(sameSet(v.n,roots)) return {ok:true,msgs:[OK()]};
+      const u=uniq(v.n);
+      if(!u.some(x=>close(x,0))&&roots.every(r=>r===0||u.some(x=>close(x,r)))) return {ok:false,msgs:[NO('Dir fehlt eine Nullstelle: Beim Ausklammern von x entsteht der Faktor x, und der ergibt x = 0. Teile nie durch x, sonst geht diese Lösung verloren.')]};
+      if(roots.every(r=>r===0||u.some(x=>close(x,-r)))&&u.some(x=>close(x,0))) return {ok:false,msgs:[NEAR('Die Vorzeichen sind vertauscht. Aus x − 3 = 0 folgt x = 3, aus x + 3 = 0 folgt x = −3.')]};
+      return {ok:false,msgs:[NO('Klammere zuerst den gemeinsamen Faktor aus, setze dann jeden Faktor gleich 0.')]};
+    },
+    tips:['Welcher Faktor steckt in jedem Summanden? Schau auf Zahlen und auf die kleinste Potenz von x.','Ausklammern, dann Nullproduktsatz: Jeden Faktor einzeln gleich 0 setzen. Nicht durch x teilen.'],
+    solution:steps, correct:{n:roots}};
+}
+function gen4V(){
+  let r1,r2; do{ r1=rnd(-5,6); r2=rnd(-5,6); }while(!r1||!r2||r1===r2);
+  const typ=pick(['cubic','cubic2','quartic']);
+  let f; const s=r1+r2, pr=r1*r2;
+  if(typ==='cubic') f=polyStr({3:1,2:-s,1:pr});
+  else if(typ==='cubic2'){ const k=pick([2,3]); f=polyStr({3:k,2:-k*s,1:k*pr}); }
+  else f=polyStr({4:1,3:-s,2:pr});
+  const lead=typ==='cubic2'?f.match(/^(\d+)/)[1]+'x':(typ==='quartic'?'x²':'x');
+  const roots=[0,r1,r2];
+  const pq=(typ==='quartic')?`x² − ${n2s(s)}x + ${n2s(pr)}`.replace('− −','+ ').replace('+ −','− '):'';
+  const quad=`x² ${s>0?'−':'+'} ${Math.abs(s)}x ${pr>=0?'+':'−'} ${Math.abs(pr)}`;
+  const pts=roots.map(r=>[r,0]);
+  return {
+    html:`<p>Gegeben ist f mit f(x) = ${f}.</p><p>a) Berechne die Nullstellen von f.<br>b) Bestimme die Schnittpunkte des Graphen von f mit der x-Achse.</p><p class="muted">Erlaubt sind Ausklammern, Satz vom Nullprodukt und pq-Formel. Für b) schreibst du Punkte, z. B. (2 | 0).</p>`,
+    inputs:[{key:'n',label:'a) Nullstellen',type:'list',ph:'z. B. 0; 3; −2'},{key:'p',label:'b) Schnittpunkte mit der x-Achse',type:'pts',ph:'z. B. (0 | 0); (3 | 0)'}],
+    check(v){
+      const msgs=[]; let ok=true;
+      if(!sameSet(v.n,roots)){ ok=false; const u=uniq(v.n);
+        if(!u.some(x=>close(x,0))&&[r1,r2].every(r=>u.some(x=>close(x,r)))) msgs.push(NO('a) Es fehlt x = 0: Der ausgeklammerte Faktor x (bzw. 2x, 3x, x²) liefert die Nullstelle 0.'));
+        else if([r1,r2].every(r=>u.some(x=>close(x,-r)))) msgs.push(NEAR('a) Vorzeichen: Bei der pq-Formel x = −p/2 ± … gehört das Vorzeichen zu p. Probe: Setze deine Werte in f ein.'));
+        else if(u.some(x=>close(x,0))&&u.length===1) msgs.push(NEAR('a) Du hast nur x = 0 gefunden. Der Rest in der Klammer ist eine quadratische Gleichung: pq-Formel!'));
+        else msgs.push(NO('a) Klammere zuerst x (bzw. den gemeinsamen Faktor) aus. Der Rest ist eine quadratische Gleichung für die pq-Formel.')); }
+      const pp=v.p; const okP=pp&&pp.length===3&&pts.every(q=>pp.some(z=>close(z[0],q[0])&&close(z[1],0)));
+      if(!okP){ ok=false; msgs.push(NEAR('b) Schnittpunkte sind Punkte (x | 0) auf der x-Achse. Die y-Koordinate ist immer 0. Du brauchst einen Punkt zu jeder Nullstelle.')); }
+      if(ok) msgs.push(OK(' Nullstellen sind Zahlen (x-Werte), Schnittpunkte sind Punkte (x | 0).')); return {ok,msgs};
+    },
+    tips:['Erst x (bzw. x², oder die Zahl mit x) ausklammern. Was bleibt in der Klammer? Es ist eine quadratische Gleichung.',`In der Klammer steht ${quad}. Löse sie mit der pq-Formel. Zusammen mit der Nullstelle aus dem Faktor vor der Klammer ergeben sich alle Nullstellen. Für b) setzt du jede Nullstelle als (x | 0) ein.`],
+    solution:`<p>f(x) = 0: ${lead} · (${quad}) = 0</p><p>${lead} = 0 gibt x = 0. Klammer: ${quad} = 0 mit p = ${n2s(-s)} und q = ${n2s(pr)}: x = ${n2s(s/2)} ± √(${n2s(s*s/4)} ${pr>=0?'−':'+'} ${Math.abs(pr)}) = ${n2s(s/2)} ± ${n2s(Math.abs(r1-r2)/2)}, also x = ${n2s(r1)} und x = ${n2s(r2)}.</p><p><b>a)</b> Nullstellen: 0, ${n2s(r1)}, ${n2s(r2)}</p><p><b>b)</b> Schnittpunkte: (0 | 0), (${n2s(r1)} | 0), (${n2s(r2)} | 0)</p>`,
+    correct:{n:roots,p:pts}};
+}
+
+/* ===================== Themenliste ===================== */
+const TOPICS=[
+ {id:'1a',k:'1a',title:'Koordinaten und Ortsvektor angeben',info:'Eckpunkte eines Körpers bestimmen, Ortsvektor aufschreiben',gen:{basis:gen1aB,vert:gen1aV},
+  merke:'Liegt ein Punkt senkrecht über einem anderen, haben beide dieselben x- und y-Koordinaten. Nur die z-Koordinate (Höhe) ist anders. Der Ortsvektor eines Punktes besteht aus seinen Koordinaten.'},
+ {id:'1b',k:'1b',title:'Verbindungsvektor und seine Länge',info:'Vektor zwischen zwei Punkten bestimmen, Betrag berechnen',gen:{basis:gen1bB,vert:gen1bV},
+  merke:'Verbindungsvektor: Spitze minus Fuß, also AB = B − A. Länge: |v| = √(x² + y² + z²).'},
+ {id:'1c',k:'1c, 1d',title:'Abstand und Streckenlänge',info:'Abstand zweier Punkte berechnen, Länge einer Strecke',gen:{basis:gen1cB,vert:gen1cV},
+  merke:'Abstand von A und B = Länge des Vektors AB = √((b₁−a₁)² + (b₂−a₂)² + (b₃−a₃)²). Schritte: Differenzen, quadrieren, addieren, Wurzel ziehen.'},
+ {id:'1e',k:'1e',title:'Volumen eines Prismas mit Raute',info:'Rechnung auswählen und begründen',gen:{basis:gen1eB,vert:gen1eV},
+  merke:'Volumen eines Prismas: V = Grundfläche · Höhe. Fläche einer Raute: A = ½ · e · f mit den Diagonalen e und f (vier rechtwinklige Dreiecke).'},
+ {id:'1f',k:'1f',title:'Schrägbilder beurteilen',info:'Wirkung und Aussagekraft verschiedener Darstellungen',gen:{basis:gen1fB,vert:gen1fV},
+  merke:'Draufsicht: Grundfläche in wahrer Gestalt. Seitenansicht: wahre Höhe. Schrägansicht: bester Raumeindruck, aber verzerrte Längen und Winkel. Im Schrägbild können verschiedene Raumpunkte am selben Bildpunkt liegen.'},
+ {id:'2a',k:'2a',title:'Punkte im Schrägbild einzeichnen',info:'Bildpunkte berechnen und einzeichnen',gen:{basis:gen2aB,vert:gen2aV},
+  merke:'Ein Punkt (x | y | z) erscheint bei (y − x/2 | z − x/2). Positives x: nach links unten. Negatives x: nach rechts oben.'},
+ {id:'2b',k:'2b',title:'Kollinearität nachweisen',info:'Prüfen, ob zwei Vektoren kollinear sind',gen:{basis:gen2bB,vert:gen2bV},
+  merke:'u und v sind kollinear, wenn v = r · u gilt. Derselbe Faktor r muss in jeder Zeile herauskommen. Ein Widerspruch in einer Zeile zeigt: nicht kollinear.'},
+ {id:'2c',k:'2c',title:'Kollinearen Vektor angeben',info:'Vielfache eines Vektors bilden, Länge und Richtung',gen:{basis:gen2cB,vert:gen2cV},
+  merke:'Vielfache r · u sind kollinear zu u. |r| > 1: länger. |r| < 1: kürzer. r < 0: entgegengesetzt gerichtet. Länge: |r · u| = |r| · |u|.'},
+ {id:'2d',k:'2d',title:'Mittelpunkt einer Strecke',info:'Mittelpunkt berechnen und rückwärts bestimmen',gen:{basis:gen2dB,vert:gen2dV},
+  merke:'Mittelpunkt: M = ½ · (A + B). Jede Koordinate einzeln mitteln. Umgekehrt: B = 2 · M − A.'},
+ {id:'2e',k:'2e',title:'Punkte verschieben',info:'Bildpunkt und Verschiebungsvektor bestimmen',gen:{basis:gen2eB,vert:gen2eV},
+  merke:'Verschieben: P′ = P + u. Verschiebungsvektor: u = P′ − P. Alle Punkte einer Figur werden um denselben Vektor verschoben.'},
+ {id:'2f',k:'2f',title:'Parameter bei vorgegebener Länge',info:'Gleichung aus der Streckenlänge aufstellen und lösen',gen:{basis:gen2fB,vert:gen2fV},
+  merke:'Vektor aufstellen, Betrag quadrieren, Gleichung lösen. Wegen des Betrags gibt es oft zwei Lösungen. Quadratische Gleichung: Normalform, dann pq-Formel.'},
+ {id:'3',k:'3',title:'Vektoren zeichnerisch addieren',info:'Summen und Differenzen von Vektoren bestimmen',gen:{basis:gen3B,vert:gen3V},
+  merke:'Addieren: Pfeile aneinanderhängen (Fuß an Spitze), Koordinaten addieren. Subtrahieren heißt, den Gegenvektor zu addieren. Vielfache: alle Koordinaten mit dem Faktor multiplizieren.'},
+ {id:'4',k:'4',title:'Nullstellen berechnen',info:'Ausklammern, Satz vom Nullprodukt, pq-Formel',gen:{basis:gen4B,vert:gen4V},
+  merke:'Gleich null setzen, ausklammern, Satz vom Nullprodukt, quadratische Faktoren mit der pq-Formel lösen. Nie durch x teilen. Nullstelle = x-Wert, Schnittpunkt mit der x-Achse = Punkt (x | 0).'}
+];
+const byId=id=>TOPICS.find(t=>t.id===id);
+
+/* ===================== Speicher ===================== */
+const KEY='ef-klausur-nachbereitung-v1';
+let store={status:{},prog:{}};
+try{ const r=localStorage.getItem(KEY); if(r) store=Object.assign(store,JSON.parse(r)); }catch(e){}
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(store)); }catch(e){} }
+function prog(id,lv){ store.prog[id]=store.prog[id]||{}; return store.prog[id][lv]=store.prog[id][lv]||{streak:0,right:0,done:0}; }
+
+/* ===================== Oberfläche ===================== */
+const S={screen:'start',filter:'all',topic:null,level:'basis',task:null,attempts:0,tip:0,solved:false,solShown:false,fb:null};
+const app=document.getElementById('app');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function dots(n){ return '<span class="dots" aria-label="'+n+' von 3 richtig in Folge">'+[0,1,2].map(i=>'<i class="'+(i<n?'on':'')+'"></i>').join('')+'</span>'; }
+
+function renderStart(){
+  const stat=id=>store.status[id]||'';
+  const filters=[['all','Alle'],['low','Nicht geschafft'],['mid','Unsicher'],['ok','Sicher'],['none','Noch offen']];
+  const shown=TOPICS.filter(t=>S.filter==='all'||(S.filter==='none'?!stat(t.id):stat(t.id)===S.filter));
+  const nLow=TOPICS.filter(t=>stat(t.id)==='low').length, nMid=TOPICS.filter(t=>stat(t.id)==='mid').length;
+  let rec='';
+  if(nLow||nMid){ const first=TOPICS.find(t=>stat(t.id)==='low')||TOPICS.find(t=>stat(t.id)==='mid'); rec=`<div class="card" style="background:var(--accent-soft);border-color:var(--accent)"><h3>Dein Start</h3><p style="margin:6px 0 10px">Beginne mit <b>${esc(first.k)} · ${esc(first.title)}</b> auf Basisniveau. ${nLow?nLow+' Teilaufgabe(n) markiert als „nicht geschafft“':nMid+' als „unsicher“'}.</p><button class="btn primary" data-go="${first.id}" data-lv="basis">Jetzt üben</button></div>`; }
+  app.innerHTML=`
+  <div class="top"><div><div class="eyebrow">Mathematik EF · Klausur 1</div><h1>Klausur nachbereiten</h1></div></div>
+  <div class="intro">
+    <p>Hier übst du gezielt die Teilaufgaben, bei denen du in der Klausur Punkte verloren hast. Die Aufgaben sind jedes Mal neu, du bekommst eine erste Rückmeldung, wenn etwas nicht stimmt, und Tipps in zwei Stufen.</p>
+    <ol class="steps"><li><b>1. Einschätzen</b>Schau in deine Klausur und markiere jede Teilaufgabe.</li><li><b>2. Üben</b>Starte auf Basisniveau. Wenn es sitzt, wechsle zur Vertiefung.</li><li><b>3. Verstehen</b>Bei Fehlern erst die Rückmeldung lesen, dann selbst korrigieren.</li></ol>
+  </div>
+  ${rec}
+  <h2 style="margin-top:22px">Wie lief es bei dir?</h2>
+  <div class="filters" role="group" aria-label="Filter">${filters.map(f=>`<button class="chip" aria-pressed="${S.filter===f[0]}" data-f="${f[0]}">${f[1]}</button>`).join('')}</div>
+  <div class="list">${shown.map(t=>{ const s=stat(t.id), pb=prog(t.id,'basis'), pv=prog(t.id,'vert'); return `
+    <div class="item" data-s="${s}">
+      <div class="head"><h3>${esc(t.title)}</h3><span class="tag">Klausur ${esc(t.k)}</span></div>
+      <div class="muted" style="font-size:.9rem">${esc(t.info)}</div>
+      <div class="seg" role="group" aria-label="Einschätzung ${esc(t.k)}">
+        ${[['low','Nicht geschafft'],['mid','Unsicher'],['ok','Sicher']].map(o=>`<button data-st="${t.id}" data-v="${o[0]}" aria-pressed="${s===o[0]}">${o[1]}</button>`).join('')}
+      </div>
+      <div class="go"><button class="btn ${s==='low'||s==='mid'||!s?'primary':''}" data-go="${t.id}" data-lv="basis">Basis üben</button> ${dots(Math.min(3,pb.streak))}
+        <button class="btn ${s==='ok'?'primary':''}" data-go="${t.id}" data-lv="vert">Vertiefung</button> ${dots(Math.min(3,pv.streak))}</div>
+    </div>`; }).join('')||'<p class="muted">Keine Teilaufgabe in dieser Auswahl.</p>'}</div>
+  <details class="tips card"><summary>Lerntipps für die Nachbereitung</summary><ul>
+    <li><b>Rechnen statt zuschauen:</b> Ein Lernvideo fühlt sich schnell verständlich an. Ob du es kannst, merkst du erst, wenn du selbst rechnest, ohne Vorlage.</li>
+    <li><b>Erst selbst, dann Hilfe:</b> Probiere 5 bis 10 Minuten allein. Dann Rückmeldung und Tipp 1, danach Tipp 2. Den Lösungsweg schaust du zum Vergleichen an.</li>
+    <li><b>Fehler sind Informationen:</b> Notiere dir, was schiefging und warum. Genau dieser Fehler taucht sonst in der nächsten Klausur wieder auf.</li>
+    <li><b>Verteilt üben:</b> Zweimal 20 Minuten an verschiedenen Tagen bringen mehr als eine lange Sitzung.</li>
+    <li><b>Erklären:</b> Erkläre einer Mitschülerin laut, warum dein Weg funktioniert.</li></ul></details>
+  <p class="foot">Dein Fortschritt wird nur in diesem Browser auf diesem Gerät gespeichert. Es werden keine Daten an die Lehrkraft gesendet.</p>`;
+}
+
+function newTask(){
+  const t=byId(S.topic); S.task=t.gen[S.level](); S.attempts=0; S.tip=0; S.solved=false; S.solShown=false; S.fb=null;
+}
+function inputHTML(inp,idx){
+  const id=`in-${inp.key}`;
+  const nbox=(n,i,cls)=>`<input class="num" id="${id}-${i}" inputmode="text" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="${esc(inp.label)} ${NAMES[i]||i+1}" ${cls||''}>`;
+  let body='';
+  if(inp.type==='num') body=`<div class="row"><input class="num wide" id="${id}-0" inputmode="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="${esc(inp.ph||'')}" aria-label="${esc(inp.label)}"></div>`;
+  else if(inp.type==='pt3') body=`<div class="row"><span class="sep">(</span>${[0,1,2].map(i=>nbox(3,i)).join('<span class="sep">|</span>')}<span class="sep">)</span></div>`;
+  else if(inp.type==='pt2') body=`<div class="row"><span class="sep">(</span>${[0,1].map(i=>nbox(2,i)).join('<span class="sep">|</span>')}<span class="sep">)</span></div>`;
+  else if(inp.type==='vec3') body=`<div class="vecin">${[0,1,2].map(i=>nbox(3,i)).join('')}</div>`;
+  else if(inp.type==='vec2') body=`<div class="vecin">${[0,1].map(i=>nbox(2,i)).join('')}</div>`;
+  else if(inp.type==='list'||inp.type==='pts') body=`<div class="row"><input class="num wide" id="${id}-0" inputmode="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="${esc(inp.ph||'')}" aria-label="${esc(inp.label)}"></div>`;
+  else if(inp.type==='radio') body=`<div class="field" role="radiogroup" aria-label="${esc(inp.label)}">${inp.options.map((o,i)=>`<label class="opt" id="${id}-opt${i}"><input type="radio" name="${id}" value="${i}"><span>${o}</span></label>`).join('')}</div>`;
+  else if(inp.type==='checks') body=`<div class="field">${inp.options.map((o,i)=>`<label class="opt" id="${id}-opt${i}"><input type="checkbox" value="${i}" id="${id}-c${i}"><span class="mono">${o}</span></label>`).join('')}</div>`;
+  return `<div class="field"><div class="lab">${esc(inp.label)}</div>${body}</div>`;
+}
+function collect(){
+  const vals={}; let missing=false;
+  S.task.inputs.forEach(inp=>{
+    const id=`in-${inp.key}`, g=i=>{const e=document.getElementById(`${id}-${i}`); return e?e.value:'';};
+    if(inp.type==='num'){ const x=parseExpr(g(0)); if(isNaN(x)) missing=true; vals[inp.key]=x; }
+    else if(inp.type==='pt3'||inp.type==='vec3'){ const a=[0,1,2].map(i=>parseExpr(g(i))); if(a.some(isNaN)) missing=true; vals[inp.key]=a; }
+    else if(inp.type==='pt2'||inp.type==='vec2'){ const a=[0,1].map(i=>parseExpr(g(i))); if(a.some(isNaN)) missing=true; vals[inp.key]=a; }
+    else if(inp.type==='list'){ const a=parseList(g(0)); if(!a) missing=true; vals[inp.key]=a||[]; }
+    else if(inp.type==='pts'){ const a=parsePts(g(0)); if(!a) missing=true; vals[inp.key]=a||[]; }
+    else if(inp.type==='radio'){ const r=document.querySelector(`input[name="${id}"]:checked`); if(!r) missing=true; vals[inp.key]=r?+r.value:-1; }
+    else if(inp.type==='checks'){ vals[inp.key]=inp.options.map((o,i)=>document.getElementById(`${id}-c${i}`).checked); }
+  });
+  return {vals,missing};
+}
+function msgsHTML(msgs){ return msgs.map(m=>`<div class="msg ${m.t}">${m.h}</div>`).join(''); }
+
+function renderPractice(){
+  const t=byId(S.topic), p=prog(t.id,S.level), task=S.task;
+  const canTip2=S.tip>=1, canSol=S.attempts>=2||S.tip>=2||S.solved;
+  app.innerHTML=`
+  <div class="top"><button class="btn ghost" id="back">← Übersicht</button></div>
+  <div class="eyebrow">Klausur ${esc(t.k)}</div><h2>${esc(t.title)}</h2>
+  <div class="levelbar" role="group" aria-label="Niveau">
+    <button aria-pressed="${S.level==='basis'}" data-lvl="basis">Basis<small>Das Verfahren sicher anwenden</small></button>
+    <button aria-pressed="${S.level==='vert'}" data-lvl="vert">Vertiefung<small>Mehr Schritte, mehr Nachdenken</small></button></div>
+  <div class="card">
+    <div class="streak">${dots(Math.min(3,p.streak))}<span>${p.streak>=3?'Stark! Drei richtig in Folge.':'Ziel: drei Aufgaben richtig in Folge'}</span></div>
+    <div class="task" id="taskbox">${task.html}</div>
+    <form class="inputs" id="form" autocomplete="off">${task.inputs.map(inputHTML).join('')}
+      <div class="actions"><button type="submit" class="btn primary" id="check">Prüfen</button>
+      <button type="button" class="btn" id="tip1">Tipp 1</button>
+      <button type="button" class="btn" id="tip2" ${canTip2?'':'disabled'}>Tipp 2</button>
+      <button type="button" class="btn" id="sol" ${canSol?'':'disabled'}>Lösungsweg</button>
+      <button type="button" class="btn ghost" id="next">${S.solved?'Nächste Aufgabe':'Andere Aufgabe'}</button></div>
+    </form>
+    <div class="fb" id="fb" aria-live="polite"></div>
+  </div>
+  <details class="card merke"><summary style="cursor:pointer;font-family:var(--head);font-weight:600">Merkhilfe zu diesem Thema</summary><p style="margin:10px 0 0">${esc(t.merke)}</p></details>`;
+  renderFb();
+}
+function renderFb(){
+  const el=document.getElementById('fb'); if(!el) return;
+  const task=S.task; let h='';
+  if(S.fb) h+=msgsHTML(S.fb);
+  if(S.tip>=1) h+=`<div class="tipbox"><b>Tipp 1 · Denkanstoß</b><br>${esc(task.tips[0])}</div>`;
+  if(S.tip>=2) h+=`<div class="tipbox"><b>Tipp 2 · Ansatz</b><br>${esc(task.tips[1])}</div>`;
+  if(S.solShown) h+=`<div class="sol"><b>Lösungsweg</b>${task.solution}<p class="muted" style="margin:8px 0 0">Vergleiche mit deinem Weg: Wo genau weichst du ab? Rechne danach eine neue Aufgabe selbst.</p></div>`;
+  if(S.solved){ const p=prog(S.topic,S.level);
+    if(p.streak>=3&&S.level==='basis') h+=`<div class="banner"><b>Drei in Folge auf Basisniveau.</b> Du kannst es offenbar. <div class="actions"><button class="btn primary" id="toV">Zur Vertiefung</button><button class="btn" id="markOk">Als „sicher“ markieren</button></div></div>`;
+    else if(p.streak>=3) h+=`<div class="banner"><b>Auch die Vertiefung sitzt.</b> <div class="actions"><button class="btn" id="markOk">Als „sicher“ markieren</button><button class="btn ghost" id="backList">Zur Übersicht</button></div></div>`; }
+  el.innerHTML=h;
+  const b1=document.getElementById('toV'); if(b1) b1.onclick=()=>{S.level='vert';newTask();renderPractice();};
+  const b2=document.getElementById('markOk'); if(b2) b2.onclick=()=>{store.status[S.topic]='ok';save();b2.textContent='Gespeichert ✓';b2.disabled=true;};
+  const b3=document.getElementById('backList'); if(b3) b3.onclick=()=>{S.screen='start';render();};
+  const t2=document.getElementById('tip2'); if(t2) t2.disabled=S.tip<1;
+  const sl=document.getElementById('sol'); if(sl) sl.disabled=!(S.attempts>=2||S.tip>=2||S.solved);
+}
+function markChecks(task,vals){
+  task.inputs.forEach(inp=>{ if(inp.type==='checks'){ inp.options.forEach((o,i)=>{ const lab=document.getElementById(`in-${inp.key}-opt${i}`); if(!lab) return; lab.classList.remove('right','wrong'); }); } });
+}
+function onSubmit(e){
+  e.preventDefault(); if(S.solved) return;
+  const {vals,missing}=collect();
+  if(missing){ S.fb=[{t:'near',h:'<b>Bitte fülle alle Felder aus.</b>Zahlen, Brüche wie 1/2 und Wurzeln wie √12 sind erlaubt. Bei Auswahlfragen wähle eine Antwort.'}]; renderFb(); return; }
+  let res; try{ res=S.task.check(vals); }catch(err){ res={ok:false,msgs:[{t:'near',h:'<b>Das konnte ich nicht auswerten.</b>Prüfe die Schreibweise deiner Eingabe.'}]}; }
+  const p=prog(S.topic,S.level); p.done++;
+  if(res.ok){ S.solved=true; p.streak++; p.right++; S.fb=res.msgs; save(); renderPractice(); document.getElementById('check').disabled=true; document.getElementById('next').textContent='Nächste Aufgabe'; }
+  else { S.attempts++; p.streak=0; S.fb=res.msgs.concat(S.attempts>=2?[{t:'near',h:'<b>Tipp:</b>Du kannst jetzt Tipp 1 und Tipp 2 öffnen. Nach zwei Versuchen ist auch der Lösungsweg freigeschaltet.'}]:[]); save(); renderFb(); }
+}
+function render(){ if(S.screen==='start') renderStart(); else renderPractice(); window.scrollTo(0,0); }
+
+document.addEventListener('click',ev=>{
+  const b=ev.target.closest('button'); if(!b) return;
+  if(b.dataset.f){ S.filter=b.dataset.f; renderStart(); return; }
+  if(b.dataset.st){ const cur=store.status[b.dataset.st]; store.status[b.dataset.st]=cur===b.dataset.v?'':b.dataset.v; save(); renderStart(); return; }
+  if(b.dataset.go){ S.topic=b.dataset.go; S.level=b.dataset.lv; S.screen='practice'; newTask(); render(); return; }
+  if(b.dataset.lvl){ S.level=b.dataset.lvl; newTask(); renderPractice(); return; }
+  if(b.id==='back'){ S.screen='start'; render(); return; }
+  if(b.id==='tip1'){ S.tip=Math.max(S.tip,1); renderFb(); return; }
+  if(b.id==='tip2'){ S.tip=Math.max(S.tip,2); renderFb(); return; }
+  if(b.id==='sol'){ S.solShown=true; renderFb(); return; }
+  if(b.id==='next'){ newTask(); renderPractice(); return; }
+});
+document.addEventListener('submit',ev=>{ if(ev.target.id==='form') onSubmit(ev); });
+render();
+</script>
